@@ -90,7 +90,7 @@ class Game:
             return 0.5
 
     def get_powers(self):
-        return [player.powers for player in self.players]
+        return [player.get_powers(self) for player in self.players]
 
     def check_result(self):
         initiative = self.get_initiative()

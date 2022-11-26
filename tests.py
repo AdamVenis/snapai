@@ -45,33 +45,32 @@ class TestEverything(unittest.TestCase):
 
     def test_misterfantastic(self):
         game = self.game
-        game.players[0].cards[0] = MisterFantastic()
-        game.step(Play(0, 0))
+        self.play_card(MisterFantastic(), 0)
         self.finish_round_and_assert_powers([[2, 0, 0], [0, 0, 0]])
 
     def test_punisher(self):
         game = self.game
-        game.players[0].cards[0] = Punisher()
-        game.step(Play(0, 0))
+        self.play_card(Punisher(), 0)
         self.finish_round_and_assert_powers([[2, 0, 0], [0, 0, 0]])
+        game.step(EndTurn())
+        self.play_card(Rock(), 0)
+        self.finish_round_and_assert_powers([[3, 0, 0], [0, 0, 0]])
+        game.step(EndTurn())
+        self.play_card(Rock(), 0)
+        self.finish_round_and_assert_powers([[4, 0, 0], [0, 0, 0]])
+        game.step(EndTurn())
+        self.play_card(Rock(), 0)
+        self.finish_round_and_assert_powers([[5, 0, 0], [0, 0, 0]])
 
     def test_namor(self):
         game = self.game
-        game.players[0].cards[0] = Namor()
-        game.step(Play(0, 0))
+        self.play_card(Namor(), 0)
         self.finish_round_and_assert_powers([[5, 0, 0], [0, 0, 0]])
 
     def test_ironman(self):
         game = self.game
-        game.players[0].cards[0] = IronMan()
-        game.step(Play(0, 0))
+        self.play_card(IronMan(), 0)
         self.finish_round_and_assert_powers([[0, 0, 0], [0, 0, 0]])
-
-    def test_gamora(self):
-        game = self.game
-        game.players[0].cards[0] = Gamora()
-        game.step(Play(0, 0))
-        self.finish_round_and_assert_powers([[7, 0, 0], [0, 0, 0]])
 
     def test_games(self):
         env = Env(p1_deck=ROCKS, p2_deck=ROCKS)

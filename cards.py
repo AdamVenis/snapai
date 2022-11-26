@@ -42,7 +42,7 @@ class Medusa(CardInfo):
     def ability(game, player, location_index, card):
         def on_reveal():
             if location_index == 1:
-                card.add_power(2)
+                card.add_buff(Buff(2))
 
         return OnReveal(on_reveal)
 
@@ -55,10 +55,9 @@ class StarLord(CardInfo):
 
     @staticmethod
     def ability(game, player, location_index, card):
-        # if the opponent played a card here this turn, +3
         def on_reveal():
             if location_index in game.opponent(player).locations_revealed_this_turn:
-                card.add_power(3)
+                card.add_buff(Buff(3))
 
         return OnReveal(on_reveal)
 
@@ -83,6 +82,13 @@ class Punisher(CardInfo):
         self.energy = 3
         self.power = 2
 
+    @staticmethod
+    def ability(game, player, location_index, card):
+        def on_reveal():
+            card.add_buff(PunisherBuff())
+
+        return OnReveal(on_reveal)
+
 
 @dataclass
 class Namor(CardInfo):
@@ -103,6 +109,16 @@ class Gamora(CardInfo):
     def __init__(self):
         self.energy = 5
         self.power = 7
+
+    @staticmethod
+    def ability(game, player, location_index, card):
+        def on_reveal():
+            if location_index in game.opponent(player).locations_revealed_this_turn:
+                card.add_buff(Buff(5))
+
+        return OnReveal(on_reveal)
+
+
 
 
 @dataclass

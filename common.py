@@ -77,6 +77,16 @@ class Player:
         self.reveal_queue = []
         self.locations_revealed_this_turn = []
 
+    def get_powers(self, game):
+        powers = []
+        for i in range(NUM_LOCATIONS):
+            power = 0
+            for card in self.cards_at_location[i]:
+                if card.revealed:
+                    power += card.get_power(game, self)
+            powers.append(power)
+        return powers
+
     def __repr__(self):
         lines = []
         for i in range(NUM_LOCATIONS):
@@ -106,14 +116,39 @@ class Card:
         self.revealed = False
         self.location_index = None
         self.player = player
+        self.buffs = []
 
     def add_power(self, delta):
-        self.power += delta
-        self.player.powers[self.location_index] += delta
+        self.buffs.append(Buff(delta))
+        # self.player.powers[self.location_index] += delta
+
+    def get_power(self, game, player):
+        power = self.power
+        for buff in self.buffs:
+            power = buff.apply(game, player, self, power)
+        return power
+
+    def add_buff(self, buff):
+        self.buffs.append(buff)
 
 
 class Event:
     pass
+
+@dataclass
+class Buff:
+    delta: int
+
+    def apply(self, game, player, card, power):
+        return power + self.delta
+
+
+class PunisherBuff:
+    def apply(self, game, player, card, power):
+        location_index = card.location_index
+        opponent = game.opponent(player)
+
+        return power + len(opponent.cards_at_location[location_index])
 
 
 @dataclass
