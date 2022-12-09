@@ -70,7 +70,7 @@ class NextTurn(Trigger):
 class Player:
     def __init__(self, deck_info):
         self.cards_at_location = [[], [], []]
-        self.deck = [Card(card_info, self) for card_info in deck_info]
+        self.deck = [Card(card_info) for card_info in deck_info]
         self.cards = [self.deck.pop(), self.deck.pop(), self.deck.pop()]
         self.powers = [0, 0, 0]
         self.effects = []
@@ -108,19 +108,17 @@ class CardInfo:
 class Card:
     info: CardInfo
 
-    def __init__(self, info: CardInfo, player: Player):
+    def __init__(self, info: CardInfo):
         self.info = info
         self.power = info.power
         self.energy = info.energy
         self.ability = info.ability
         self.revealed = False
         self.location_index = None
-        self.player = player
         self.buffs = []
 
     def add_power(self, delta):
         self.buffs.append(Buff(delta))
-        # self.player.powers[self.location_index] += delta
 
     def get_power(self, game, player):
         power = self.power
@@ -131,6 +129,15 @@ class Card:
     def add_buff(self, buff):
         self.buffs.append(buff)
 
+class LocationInfo():
+    pass
+
+@dataclass
+class Location:
+    info: LocationInfo
+
+    def __init__(self, info: LocationInfo):
+        self.info = info
 
 class Event:
     pass
@@ -141,6 +148,11 @@ class Buff:
 
     def apply(self, game, player, card, power):
         return power + self.delta
+
+
+class DoubleBuff:
+    def apply(self, game, player, power):
+        return power * 2
 
 
 class PunisherBuff:

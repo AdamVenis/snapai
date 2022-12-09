@@ -69,8 +69,9 @@ class TestEverything(unittest.TestCase):
 
     def test_ironman(self):
         game = self.game
+        self.play_card(MistyKnight(), 0)
         self.play_card(IronMan(), 0)
-        self.finish_round_and_assert_powers([[0, 0, 0], [0, 0, 0]])
+        self.finish_round_and_assert_powers([[4, 0, 0], [0, 0, 0]])
 
     def test_games(self):
         env = Env(p1_deck=ROCKS, p2_deck=ROCKS)
@@ -84,8 +85,7 @@ class TestEverything(unittest.TestCase):
         return {k: v / 100 for k, v in results.items()}
 
     def play_card(self, card_info, location_index):
-        current_player = self.game.current_player()
-        current_player.cards[0] = Card(card_info, current_player)
+        self.game.current_player().cards[0] = Card(card_info)
         self.game.step(Play(0, location_index))
 
     def finish_round_and_assert_powers(self, expected_powers):

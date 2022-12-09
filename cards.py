@@ -103,6 +103,12 @@ class IronMan(CardInfo):
         self.energy = 5
         self.power = 0
 
+    @staticmethod
+    def ability(game, player, location_index, card):
+        def on_reveal():
+            location = player.locations[location_index]
+            location.add_buff(DoubleBuff())
+
 
 @dataclass
 class Gamora(CardInfo):
@@ -117,8 +123,6 @@ class Gamora(CardInfo):
                 card.add_buff(Buff(5))
 
         return OnReveal(on_reveal)
-
-
 
 
 @dataclass
