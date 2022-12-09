@@ -5,6 +5,54 @@ from cards import *
 
 ROCKS = [Rock()] * 12
 
+'''
+categories of resolution order
+
+onreveal
+ongoing
+jotunheim
+
+
+
+TestCase
+
+Medusa IronMan -> 8 (also IronMan Medusa)
+
+IronMan Punisher -> opponent plays cards
+
+MisterFantastic mid, IronMan left
+
+Colossus Deathlok
+
+Nightcrawler - move action
+
+Punisher against squirrel girl in another lane
+
+Spectrum doesn't buff Ongoing that have been Enchantress'd
+
+
+
+
+
+
+
+
+
+
+Forge into Punisher, gets hit with Enchantress
+
+Simple Cards to add:
+Spectrum
+NightCrawler
+Squirrel Girl
+
+
+Simple Locations:
+
+Xander (+1 ongoing)
+Baxter Building
+Atlantis (+5 if only card there)
+'''
 
 class TestEverything(unittest.TestCase):
     def setUp(self):
