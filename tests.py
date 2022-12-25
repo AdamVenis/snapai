@@ -2,23 +2,22 @@ import unittest
 
 from snap import *
 from cards import *
+from locations import *
 
 ROCKS = [Rock()] * 12
+RUINS = [Ruins()] * 3
 
-'''
+"""
 categories of resolution order
 
 onreveal
 ongoing
-jotunheim
+end of turn (jotunheim)
+end of game (captain marvel)
 
 
 
 TestCase
-
-Medusa IronMan -> 8 (also IronMan Medusa)
-
-IronMan Punisher -> opponent plays cards
 
 MisterFantastic mid, IronMan left
 
@@ -30,8 +29,9 @@ Punisher against squirrel girl in another lane
 
 Spectrum doesn't buff Ongoing that have been Enchantress'd
 
-
-
+Qs:
+- does punisher get buff before card is revealed? relevant for e.g. invisible woman and shangchi
+    A: yes
 
 
 
@@ -52,11 +52,12 @@ Simple Locations:
 Xander (+1 ongoing)
 Baxter Building
 Atlantis (+5 if only card there)
-'''
+"""
+
 
 class TestEverything(unittest.TestCase):
     def setUp(self):
-        self.game = Game(ROCKS, ROCKS)
+        self.new_game()
 
     def test_basic(self):
         game = self.game
@@ -94,7 +95,9 @@ class TestEverything(unittest.TestCase):
     def test_misterfantastic(self):
         game = self.game
         self.play_card(MisterFantastic(), 0)
-        self.finish_round_and_assert_powers([[2, 0, 0], [0, 0, 0]])
+        self.finish_round_and_assert_powers([[2, 2, 0], [0, 0, 0]])
+        self.play_card(MisterFantastic(), 1)
+        self.finish_round_and_assert_powers([[4, 4, 2], [0, 0, 0]])
 
     def test_punisher(self):
         game = self.game
@@ -121,8 +124,37 @@ class TestEverything(unittest.TestCase):
         self.play_card(IronMan(), 0)
         self.finish_round_and_assert_powers([[4, 0, 0], [0, 0, 0]])
 
+        game = self.new_game()
+        self.play_card(IronMan(), 1)
+        self.play_card(Medusa(), 1)
+        self.finish_round_and_assert_powers([[0, 8, 0], [0, 0, 0]])
+
+        game = self.new_game()
+        self.play_card(IronMan(), 0)
+        self.play_card(Punisher(), 0)
+        self.finish_round_and_assert_powers([[4, 0, 0], [0, 0, 0]])
+        game.step(EndTurn())
+        self.play_card(Rock(), 0)
+        self.finish_round_and_assert_powers([[6, 0, 0], [0, 0, 0]])
+        
+
+    # ------- LOCATIONS --------
+
+    def test_xandar(self):
+        game = self.game
+        self.set_all_locations(Xandar())
+        self.play_card(MistyKnight(), 0)
+        self.play_card(MistyKnight(), 1)
+        self.play_card(MistyKnight(), 1)
+        self.finish_round_and_assert_powers([[3, 6, 0], [0, 0, 0]])
+
+        game = self.new_game()
+        self.set_all_locations(Xandar())
+        self.play_card(IronMan(), 0)
+        self.finish_round_and_assert_powers([[2, 0, 0], [0, 0, 0]])
+
     def test_games(self):
-        env = Env(p1_deck=ROCKS, p2_deck=ROCKS)
+        env = Env(p1_deck=ROCKS, p2_deck=ROCKS, location_infos=RUINS)
         agents = [RandomAgent(), RandomAgent()]
         results = collections.defaultdict(int)
         for _ in range(100):
@@ -132,9 +164,17 @@ class TestEverything(unittest.TestCase):
 
         return {k: v / 100 for k, v in results.items()}
 
+    def new_game(self):
+        self.game = Game(ROCKS, ROCKS, RUINS)
+        return self.game
+
     def play_card(self, card_info, location_index):
         self.game.current_player().cards[0] = Card(card_info)
         self.game.step(Play(0, location_index))
+
+    def set_all_locations(self, location_info):
+        for i in [0, 1, 2]:
+            self.game.locations[i] = Location(location_info)
 
     def finish_round_and_assert_powers(self, expected_powers):
         current_round = self.game.current_round

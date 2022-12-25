@@ -80,11 +80,12 @@ class Player:
     def get_powers(self, game):
         powers = []
         for i in range(NUM_LOCATIONS):
-            power = 0
-            for card in self.cards_at_location[i]:
-                if card.revealed:
-                    power += card.get_power(game, self)
-            powers.append(power)
+            card_powers = [
+                card.get_power(game, self)
+                for card in self.cards_at_location[i]
+                if card.revealed
+            ]
+            powers.append(game.locations[i].get_power(game, self, card_powers))
         return powers
 
     def __repr__(self):
@@ -129,8 +130,11 @@ class Card:
     def add_buff(self, buff):
         self.buffs.append(buff)
 
-class LocationInfo():
-    pass
+
+class LocationInfo:
+    def get_power(self, card_powers):
+        return sum(card_powers)
+
 
 @dataclass
 class Location:
@@ -138,9 +142,32 @@ class Location:
 
     def __init__(self, info: LocationInfo):
         self.info = info
+        self.buffs = []
+
+    def add_buff(self, buff):
+        self.buffs.append(buff)
+
+    def get_power(self, game, player, card_powers):
+        power = self.info.get_power(card_powers)
+        for buff in self.buffs:
+            power = buff.apply(game, player, power)
+        return power
+
 
 class Event:
     pass
+
+
+@dataclass
+class LocationBuff:
+    player: Player
+    delta: int
+
+    def apply(self, game, player, power):
+        if player != self.player:
+            return power
+        return power + self.delta
+
 
 @dataclass
 class Buff:
@@ -150,6 +177,7 @@ class Buff:
         return power + self.delta
 
 
+@dataclass
 class DoubleBuff:
     def apply(self, game, player, power):
         return power * 2

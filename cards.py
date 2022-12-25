@@ -75,6 +75,16 @@ class MisterFantastic(CardInfo):
         self.energy = 3
         self.power = 2
 
+    @staticmethod
+    def ability(game, player, location_index, card):
+        def on_reveal():
+            if location_index > 0:
+                game.locations[location_index - 1].add_buff(LocationBuff(player, 2))
+            if location_index < 2:
+                game.locations[location_index + 1].add_buff(LocationBuff(player, 2))
+
+        return OnReveal(on_reveal)
+
 
 @dataclass
 class Punisher(CardInfo):
@@ -106,8 +116,10 @@ class IronMan(CardInfo):
     @staticmethod
     def ability(game, player, location_index, card):
         def on_reveal():
-            location = player.locations[location_index]
+            location = game.locations[location_index]
             location.add_buff(DoubleBuff())
+
+        return OnReveal(on_reveal)
 
 
 @dataclass

@@ -59,25 +59,26 @@ class Event(enum.Enum):
 
 
 class Game:
-    def __init__(self, p1_deck, p2_deck):
+    def __init__(self, p1_deck, p2_deck, location_infos):
         self.result = GameResult.UNFINISHED
         self.players = [Player(list(p1_deck)), Player(list(p2_deck))]
         self.initiative_index = random.randint(0, 1)
         self.current_round = 0
         self.max_rounds = ROUNDS
         self.current_player_index = 0
+        self.locations = [Location(location_info) for location_info in location_infos]
 
     def get_initiative(self):
-        p1_locations, p2_locations = 0, 0
+        p1_locations_won, p2_locations_won = 0, 0
         p1, p2 = self.players
         for loc in range(NUM_LOCATIONS):
             if p1.powers[loc] > p2.powers[loc]:
-                p1_locations += 1
+                p1_locations_won += 1
             elif p1.powers[loc] < p2.powers[loc]:
-                p2_locations += 1
-        if p1_locations > p2_locations:
+                p2_locations_won += 1
+        if p1_locations_won > p2_locations_won:
             return 0
-        elif p1_locations < p2_locations:
+        elif p1_locations_won < p2_locations_won:
             return 1
 
         p1_total = sum(p1.powers)
