@@ -136,7 +136,19 @@ class TestEverything(unittest.TestCase):
         game.step(EndTurn())
         self.play_card(Rock(), 0)
         self.finish_round_and_assert_powers([[6, 0, 0], [0, 0, 0]])
-        
+
+    def test_galactus(self):
+        game = self.new_game()
+        self.play_card(Galactus(), 0)
+        self.finish_round_and_assert_powers([[3], [0]])
+        assert(len(self.game.locations) == 1)
+
+        game = self.new_game()
+        self.play_card(MistyKnight(), 0)
+        self.play_card(Galactus(), 0)
+        self.finish_round_and_assert_powers([[5, 0, 0],[0, 0, 0]])
+        assert(len(self.game.locations) == 3)
+
 
     # ------- LOCATIONS --------
 

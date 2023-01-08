@@ -34,7 +34,7 @@ class Play:
 
     def act(self, player, game):
         card = player.cards.pop(self.card_index)
-        player.cards_at_location[self.location_index].append(card)
+        player.cards_at_locations[self.location_index].append(card)
         card.location_index = self.location_index
         player.reveal_queue.append(card)
         player.locations_revealed_this_turn.append(self.location_index)
@@ -69,7 +69,7 @@ class NextTurn(Trigger):
 
 class Player:
     def __init__(self, deck_info):
-        self.cards_at_location = [[], [], []]
+        self.cards_at_locations = [[], [], []]
         self.deck = [Card(card_info) for card_info in deck_info]
         self.cards = [self.deck.pop(), self.deck.pop(), self.deck.pop()]
         self.powers = [0, 0, 0]
@@ -79,10 +79,11 @@ class Player:
 
     def get_powers(self, game):
         powers = []
-        for i in range(NUM_LOCATIONS):
+        for i in range(len(self.cards_at_locations)):
+            print(self.cards_at_locations[i])
             card_powers = [
                 card.get_power(game, self)
-                for card in self.cards_at_location[i]
+                for card in self.cards_at_locations[i]
                 if card.revealed
             ]
             powers.append(game.locations[i].get_power(game, self, card_powers))
@@ -90,8 +91,8 @@ class Player:
 
     def __repr__(self):
         lines = []
-        for i in range(NUM_LOCATIONS):
-            lines.append(f"{self.cards_at_location[i]}")
+        for cards_at_location in self.cards_at_locations:
+            lines.append(f"{self.cards_at_locations[i]}")
         return "\n".join(lines)
 
 
@@ -188,7 +189,7 @@ class PunisherBuff:
         location_index = card.location_index
         opponent = game.opponent(player)
 
-        return power + len(opponent.cards_at_location[location_index])
+        return power + len(opponent.cards_at_locations[location_index])
 
 
 @dataclass

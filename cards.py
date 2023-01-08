@@ -132,7 +132,7 @@ class Gamora(CardInfo):
     def ability(game, player, location_index, card):
         def on_reveal():
             if location_index in game.opponent(player).locations_revealed_this_turn:
-                card.add_buff(Buff(5))
+                card.add_buff(Buff(6))
 
         return OnReveal(on_reveal)
 
@@ -142,6 +142,23 @@ class Hulk(CardInfo):
     def __init__(self):
         self.energy = 6
         self.power = 12
+
+@dataclass
+class Galactus(CardInfo):
+    def __init__(self):
+        self.energy = 6
+        self.power = 3
+
+    @staticmethod
+    def ability(game, player, location_index, card):
+        def on_reveal():
+            if len(player.cards_at_locations[location_index]) == 1:
+                game.locations = [game.locations[location_index]]
+                game.players[0].cards_at_locations = [game.players[0].cards_at_locations[location_index]]
+                game.players[1].cards_at_locations = [game.players[1].cards_at_locations[location_index]]
+
+        return OnReveal(on_reveal)
+
 
 
 @dataclass
