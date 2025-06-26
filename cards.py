@@ -26,6 +26,23 @@ class Quicksilver(CardInfo):
 
 
 @dataclass
+class Cosmo(CardInfo):
+    def __init__(self):
+        self.energy = 3
+        self.power = 3
+
+    @staticmethod
+    def ability(game, player, location_index, card):
+        
+
+@dataclass
+class Enchantress(CardInfo):
+    def __init__(self):
+        self.energy = 4
+        self.power = 4
+
+
+@dataclass
 class MistyKnight(CardInfo):
     def __init__(self):
         self.energy = 1

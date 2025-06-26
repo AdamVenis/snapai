@@ -146,8 +146,17 @@ class TestEverything(unittest.TestCase):
         game = self.new_game()
         self.play_card(MistyKnight(), 0)
         self.play_card(Galactus(), 0)
-        self.finish_round_and_assert_powers([[5, 0, 0],[0, 0, 0]])
+        self.finish_round_and_assert_powers([[5, 0, 0], [0, 0, 0]])
         assert(len(self.game.locations) == 3)
+
+
+    def test_cosmo(self):
+        game = self.new_game()
+        self.ensure_p1_initiative()
+        self.play_card(Cosmo(), 0)
+        game.step(EndTurn())
+        self.play_card(StarLord(), 0)
+        self.finish_round_and_assert_powers([[3, 0, 2], [2, 0, 0]])
 
 
     # ------- LOCATIONS --------
@@ -193,6 +202,12 @@ class TestEverything(unittest.TestCase):
         while self.game.current_round == current_round:
             self.game.step(EndTurn())
         self.assertEqual(expected_powers, self.game.get_powers())
+
+
+    def ensure_p1_initiative(self):
+        self.play_card(MistyKnight(), 2)
+        self.game.step(EndTurn())
+        self.game.step(EndTurn())
 
 
 if __name__ == "__main__":
